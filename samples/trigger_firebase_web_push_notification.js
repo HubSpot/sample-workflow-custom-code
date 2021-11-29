@@ -1,5 +1,6 @@
 // For instructions on how to use this snippet, see this guide:
 // https://github.com/HubSpot/sample-workflow-custom-code/blob/main/guides/trigger_firebase_web_push_notification.md
+// Credit: Amine Ben Cheikh Brahim https://gist.github.com/AmineBENCHEIKHBRAHIM
 
 // Import Axios library for easier HTTP Requests making
 const axios = require('axios')
