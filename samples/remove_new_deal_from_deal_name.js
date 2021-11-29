@@ -1,3 +1,5 @@
+// Credit: David Gutla https://github.com/gutla
+
 // This code removes the '- new deal' text added to a deal name after it is created.
 const TEXT_TO_REMOVE = ' - New Deal';
 
