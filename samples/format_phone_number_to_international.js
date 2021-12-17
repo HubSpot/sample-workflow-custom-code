@@ -41,7 +41,7 @@ exports.main = (event) => {
   // the Country Codes JSON and returns a correctly formatted number.
   const formatToIntl = (number, country) => {
     if (country) {
-      for (countryInfo of countryCodes) {
+      for (let countryInfo of countryCodes) {
         if (
           countryInfo.name.toLowerCase().replace(/\s+/g, '') ==
           country.toLowerCase().replace(/\s+/g, '')
