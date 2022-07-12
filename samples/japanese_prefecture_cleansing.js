@@ -419,3 +419,5 @@ exports.main = async (event, callback) => {
         }
     });
 }
+
+// Original author: Tyler Gunji (https://gist.github.com/dshukertjr)
