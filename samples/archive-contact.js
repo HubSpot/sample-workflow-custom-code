@@ -15,3 +15,8 @@ exports.main = (event) => {
       console.log('Contact archived')
     });
 };
+
+/**
+ * Original Author: David Gutla
+ * Reviewed by: Angus Gibbs
+ */
