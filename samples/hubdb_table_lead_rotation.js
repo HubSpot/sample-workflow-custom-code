@@ -7,7 +7,7 @@ const hubspot = require('@hubspot/api-client');
 exports.main = (event, callback) => {
   // Instantiate HubSpot API Client
   const hubspotClient = new hubspot.Client({
-    apiKey: process.env.HAPIKEY
+    accessToken: process.env.secretName
   });
 
   // Store the postal code of the current contact enrolld in the workflow

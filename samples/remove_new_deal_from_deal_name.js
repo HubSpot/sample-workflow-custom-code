@@ -7,7 +7,7 @@ const hubspot = require('@hubspot/api-client');
 
 exports.main = (event, callback) => {
   const hubspotClient = new hubspot.Client({
-    apiKey: process.env.HAPIKEY
+    accessToken: process.env.secretName
   });
 
   const dealId = event.object.objectId;

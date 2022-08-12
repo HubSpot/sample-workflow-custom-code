@@ -60,7 +60,7 @@ const buildDealTaskObject = (taskOwner, timestamp, dealId, subject) => {
 
 exports.main = async (event, callback) => {
     const hubspotClient = new hubspot.Client({
-        apiKey: process.env.HAPIKEY
+        accessToken: process.env.secretName
     });
 
     const taskOwner = parseInt(event.inputFields['hubspot_owner_id']);

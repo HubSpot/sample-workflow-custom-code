@@ -7,7 +7,7 @@ const hubspot = require('@hubspot/api-client');
 exports.main = (event, callback) => {
   // Instantiate HubSpot Client that will be used to interface with Source Portal (Portal A)
   const hubspotClient = new hubspot.Client({
-    apiKey: process.env.HAPIKEY
+    accessToken: process.env.secretName
   });
 
   // Instantiate HubSpot Client that will be used to interface with Destination Portal (Portal B)

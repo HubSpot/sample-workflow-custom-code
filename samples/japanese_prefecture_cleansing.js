@@ -383,7 +383,7 @@ exports.main = async (event, callback) => {
 
 
     const hubspotClient = new hubspot.Client({
-        apiKey: process.env.HAPIKEY
+        accessToken: process.env.secretName
     });
     const results = await hubspotClient.crm.contacts.basicApi.getById(event.object.objectId, ['state'])
 
