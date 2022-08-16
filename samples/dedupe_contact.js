@@ -12,7 +12,7 @@ const hubspot = require('@hubspot/api-client');
 exports.main = (event, callback) => {
   // Make sure to add your API key under "Secrets" above.
   const hubspotClient = new hubspot.Client({
-    apiKey: process.env.HAPIKEY
+    accessToken: process.env.secretName
   });
 
   hubspotClient.crm.contacts.basicApi

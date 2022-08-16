@@ -8,7 +8,7 @@ const request = require("request");
 
 exports.main = (event, callback) => {
   const hubspotClient = new hubspot.Client({
-    apiKey: process.env.HAPIKEY
+    accessToken: process.env.secretName
   });
 
   // Find all tasks associated with deal
@@ -20,7 +20,7 @@ exports.main = (event, callback) => {
           method: 'PATCH',
           url: 'https://api.hubapi.com/engagements/v1/engagements/' + task.id,
           qs: {
-            hapikey: process.env.HAPIKEY
+            haccessToken: process.env.secretName
           },
           headers: {
             'Content-Type': 'application/json'

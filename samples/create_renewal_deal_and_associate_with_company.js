@@ -6,7 +6,7 @@ const hubspot = require('@hubspot/api-client');
 
 exports.main = async (event, callback) => {
   const hubspotClient = new hubspot.Client({
-    apiKey: process.env.HAPIKEY
+    accessToken: process.env.secretName
   });
 
   // Retrieving the properties of the deal to renew

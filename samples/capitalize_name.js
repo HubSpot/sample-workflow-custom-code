@@ -16,10 +16,10 @@ exports.main = (event, callback) => {
 };
 
 function processEvent(event) {
-  const hubspotClient = new hubspot.Client({ apiKey: process.env.HAPIKEY });
-  
+  const hubspotClient = new hubspot.Client({ accessToken: process.env.secretName });
+
   let contactId = event.object.objectId;
-  
+
   hubspotClient.crm.contacts.basicApi
     .getById(contactId, [FIRSTNAME_PROP, LASTNAME_PROP])
     .then(results => {

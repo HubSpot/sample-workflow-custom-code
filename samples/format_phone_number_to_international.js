@@ -2,7 +2,7 @@ const hubspot = require('@hubspot/api-client');
 
 exports.main = (event) => {
   const hubspotClient = new hubspot.Client({
-    apiKey: process.env.HAPIKEY
+    accessToken: process.env.secretName
   });
 
   // ID of the contact

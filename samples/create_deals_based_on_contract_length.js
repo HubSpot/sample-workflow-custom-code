@@ -7,7 +7,7 @@ const hubspot = require('@hubspot/api-client');
 exports.main = (event, callback) => {
   // Set up the HubSpot API Client
   const hubspotClient = new hubspot.Client({
-    apiKey: process.env.HAPIKEY
+    accessToken: process.env.secretName
   });
 
   // Use the client to pull information relating to the currently enrolled deal
