@@ -18,12 +18,10 @@ exports.main = (event, callback) => {
       results.body.results.forEach(task => {
         var options = {
           method: 'PATCH',
-          url: 'https://api.hubapi.com/engagements/v1/engagements/' + task.id,
-          qs: {
-            haccessToken: process.env.secretName
-          },
+          url: 'https://api.hubapi.com/engagements/v4/engagements/' + task.id,
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + process.env.secretName
           },
           body: {
             engagement: {},
