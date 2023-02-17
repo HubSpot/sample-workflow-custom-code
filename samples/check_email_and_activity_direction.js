@@ -18,7 +18,7 @@ function formatTimestamp(timestamp) {
 }
 
 exports.main = async (event, callback) => {
-  const enrolledDealId = event.inputFields['hs_object_id'];
+  const enrolledDealId = event.object.objectId;
 
   // Format data for 1st API call - Calls
   const callData = {
