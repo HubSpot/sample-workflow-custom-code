@@ -1,10 +1,4 @@
-const axios = require('axios');
-const params = {
-  headers: {
-    Authorization: `Bearer ${process.env.CCA_token}`,
-    'Content-Type': 'application/json',
-  },
-};
+const hubspot = require('@hubspot/api-client');
 
 // Format a unix timestamp to the specified language-sensitive representation.
 function formatTimestamp(timestamp) {
@@ -18,40 +12,20 @@ function formatTimestamp(timestamp) {
 }
 
 exports.main = async (event, callback) => {
+  const hubspotClient = new hubspot.Client({
+    accessToken: process.env.SECRET_TOKEN,
+  });
+
+  // Find the most recent Call associated to the enrolled Deal.
   const enrolledDealId = event.object.objectId;
-
-  // Format data for 1st API call - Calls
-  const callData = {
-    filters: [
-      {
-        propertyName: 'associations.deal',
-        operator: 'EQ',
-        value: enrolledDealId, // Find the calls associated with the enrolled deal
-      },
-    ],
-    sorts: [
-      {
-        propertyName: 'hs_createdate',
-        direction: 'DESCENDING', // List them in descending order
-      },
-    ],
-    properties: ['hs_call_direction', 'hs_call_body', 'hs_timestamp'], // Return the direction and body of the call
-  };
-
-  // Format data for 2st API call - Emails
-  const emailData = {
+  const callsSearchRequest = {
     filterGroups: [
       {
         filters: [
           {
             propertyName: 'associations.deal',
             operator: 'EQ',
-            value: enrolledDealId, // Find the emails associated with the enrolled deal
-          },
-          {
-            propertyName: 'hs_email_direction',
-            operator: 'NEQ',
-            value: 'Forwarded', // Excluded forwarded emails
+            value: enrolledDealId,
           },
         ],
       },
@@ -59,59 +33,92 @@ exports.main = async (event, callback) => {
     sorts: [
       {
         propertyName: 'hs_createdate',
-        direction: 'DESCENDING', // List them in descending order
+        direction: 'DESCENDING',
       },
     ],
-    properties: ['hs_email_direction', 'hs_timestamp'], // Return the direction of the email
+    properties: ['hs_call_direction', 'hs_timestamp'],
+    limit: 1, // We only need the most recent call.
+    after: 0,
   };
 
-  // Make 1st API call to search Calls
-  axios
-    .post(
-      'https://api.hubapi.com/crm/v3/objects/calls/search',
-      callData,
-      params
-    )
-    .then(response => {
-      // Retrieve details of the most recent Call
-      let recentCall = response.data.results[0].properties;
-      let callTime = formatTimestamp(recentCall.hs_timestamp);
-      let callDir = recentCall.hs_call_direction;
-      console.log(callDir + ' at ' + callTime);
+  const callsResponse = await hubspotClient.apiRequest({
+    method: 'POST',
+    path: '/crm/v3/objects/calls/search',
+    body: callsSearchRequest,
+  });
+  const callsJson = await callsResponse.json();
 
-      // Make 2nd API call to search Emails
-      axios
-        .post(
-          'https://api.hubapi.com/crm/v3/objects/emails/search',
-          emailData,
-          params
-        )
-        .then(res => {
-          // Retrieve details of the most recent Email
-          let recentEmail = res.data.results[0].properties;
-          let emailTime = formatTimestamp(recentEmail.hs_timestamp);
-          let emailDir = recentEmail.hs_email_direction;
-          console.log(emailDir + ' at ' + emailTime);
+  const [mostRecentCall] = callsJson.results;
+  let callDirection;
+  let callTime;
+  let callMessage;
+  if (mostRecentCall) {
+    const { hs_call_direction, hs_timestamp } = mostRecentCall.properties;
+    callDirection = hs_call_direction;
+    callTime = formatTimestamp(hs_timestamp);
+    callMessage = `Last ${callDirection} call at ${callTime}.`;
+  } else {
+    callMessage = 'No recent associated calls found.';
+  }
+  console.log(callMessage);
 
-          // Format combined message
-          let message = `Last ${callDir} call at ${callTime}, Last ${emailDir} at ${emailTime}`;
+  // Find the most recent, non-forwarded Email associated to the enrolled Deal.
+  const emailsSearchRequest = {
+    filterGroups: [
+      {
+        filters: [
+          {
+            propertyName: 'associations.deal',
+            operator: 'EQ',
+            value: enrolledDealId,
+          },
+          {
+            propertyName: 'hs_email_direction',
+            operator: 'NEQ',
+            value: 'Forwarded',
+          },
+        ],
+      },
+    ],
+    sorts: [
+      {
+        propertyName: 'hs_createdate',
+        direction: 'DESCENDING',
+      },
+    ],
+    properties: ['hs_email_direction', 'hs_timestamp'],
+    limit: 1, // We only need the most recent email.
+    after: 0,
+  };
 
-          // Store the outputs for use in other parts of the workflow
-          callback({
-            outputFields: {
-              last_call_direction: callDir,
-              last_call_time: callTime,
-              last_email_direction: emailDir,
-              last_email_time: emailTime,
-              message: message,
-            },
-          });
-        })
-        .catch(err => {
-          console.log(err);
-        });
-    })
-    .catch(error => {
-      console.log(error);
-    });
+  const emailsResponse = await hubspotClient.apiRequest({
+    method: 'POST',
+    path: '/crm/v3/objects/emails/search',
+    body: emailsSearchRequest,
+  });
+  const emailsJson = await emailsResponse.json();
+
+  const [mostRecentEmail] = emailsJson.results;
+  let emailDirection;
+  let emailTime;
+  let emailMessage;
+  if (mostRecentEmail) {
+    const { hs_email_direction, hs_timestamp } = mostRecentEmail.properties;
+    emailDirection = hs_email_direction;
+    emailTime = formatTimestamp(hs_timestamp);
+    emailMessage = `Last ${emailDirection} email at ${emailTime}.`;
+  } else {
+    emailMessage = 'No recent associated emails found.';
+  }
+  console.log(emailMessage);
+
+  callback({
+    outputFields: {
+      last_call_direction: callDirection,
+      last_call_time: callTime,
+      last_email_direction: emailDirection,
+      last_email_time: emailTime,
+      message: [callMessage, emailMessage].filter(Boolean).join(''),
+    },
+  });
 };
