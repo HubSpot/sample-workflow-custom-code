@@ -6,6 +6,15 @@ const params = {
   },
 };
 
+// Function to neaten the format of the date outputs
+function dateConvert(date) {
+  var dateTime = new Date(date);
+  return dateTime.toLocaleString('en-SG', {
+    timeZone: 'Asia/Singapore',
+    hour12: false,
+  });
+}
+
 exports.main = async (event, callback) => {
   // Take the enrolled deal ID
   const deal_id = event.inputFields['hs_object_id'];
@@ -105,12 +114,3 @@ exports.main = async (event, callback) => {
       console.log(error);
     });
 };
-
-// Function to neaten the format of the date outputs
-function dateConvert(date) {
-  var dateTime = new Date(date);
-  return dateTime.toLocaleString('en-SG', {
-    timeZone: 'Asia/Singapore',
-    hour12: false,
-  });
-}
