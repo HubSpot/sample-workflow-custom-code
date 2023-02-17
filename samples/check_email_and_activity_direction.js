@@ -6,13 +6,15 @@ const params = {
   },
 };
 
-// Function to neaten the format of the date outputs
-function dateConvert(date) {
-  var dateTime = new Date(date);
-  return dateTime.toLocaleString('en-SG', {
+// Format a unix timestamp to the specified language-sensitive representation.
+function formatTimestamp(timestamp) {
+  // Change the locale and options to fit your needs.
+  const locale = 'en-SG';
+  const options = {
     timeZone: 'Asia/Singapore',
     hour12: false,
-  });
+  };
+  return new Date(timestamp).toLocaleDateString(locale, options);
 }
 
 exports.main = async (event, callback) => {
@@ -74,7 +76,7 @@ exports.main = async (event, callback) => {
     .then(response => {
       // Retrieve details of the most recent Call
       let recentCall = response.data.results[0].properties;
-      let callTime = dateConvert(recentCall.hs_timestamp);
+      let callTime = formatTimestamp(recentCall.hs_timestamp);
       let callDir = recentCall.hs_call_direction;
       console.log(callDir + ' at ' + callTime);
 
@@ -88,7 +90,7 @@ exports.main = async (event, callback) => {
         .then(res => {
           // Retrieve details of the most recent Email
           let recentEmail = res.data.results[0].properties;
-          let emailTime = dateConvert(recentEmail.hs_timestamp);
+          let emailTime = formatTimestamp(recentEmail.hs_timestamp);
           let emailDir = recentEmail.hs_email_direction;
           console.log(emailDir + ' at ' + emailTime);
 
