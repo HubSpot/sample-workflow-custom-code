@@ -18,8 +18,7 @@ function formatTimestamp(timestamp) {
 }
 
 exports.main = async (event, callback) => {
-  // Take the enrolled deal ID
-  const deal_id = event.inputFields['hs_object_id'];
+  const enrolledDealId = event.inputFields['hs_object_id'];
 
   // Format data for 1st API call - Calls
   const callData = {
@@ -27,7 +26,7 @@ exports.main = async (event, callback) => {
       {
         propertyName: 'associations.deal',
         operator: 'EQ',
-        value: deal_id, // Find the calls associated with the enrolled deal
+        value: enrolledDealId, // Find the calls associated with the enrolled deal
       },
     ],
     sorts: [
@@ -47,7 +46,7 @@ exports.main = async (event, callback) => {
           {
             propertyName: 'associations.deal',
             operator: 'EQ',
-            value: deal_id, // Find the emails associated with the enrolled deal
+            value: enrolledDealId, // Find the emails associated with the enrolled deal
           },
           {
             propertyName: 'hs_email_direction',
