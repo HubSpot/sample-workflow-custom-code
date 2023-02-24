@@ -12,15 +12,15 @@ const hubspotClient = new hubspot.Client({
 // Must set the table id of HubDB
 const dbTableId = 1234567;
 
-// Return row id if the row with objectId exists or false if not exists
-const rowExist = async (portalId, objectId) => {
-  const url = `/cms/v3/hubdb/tables/${dbTableId}/rows?portalId=${portalId}&object_id=${objectId}`;
+// Return row id if the row with objectId exists or 0 if not exists
+const getExistingRowId = async objectId => {
+  const url = `/cms/v3/hubdb/tables/${dbTableId}/rows?object_id=${objectId}`;
   const response = await hubspotClient.apiRequest({
     method: 'get',
     path: url,
   });
   const json = await response.json();
-  return json.total === 0 ? false : json.results[0].id;
+  return json.total === 0 ? 0 : json.results[0].id;
 };
 
 const createRow = async values => {
@@ -29,7 +29,6 @@ const createRow = async values => {
     { values }
   );
   await hubspotClient.cms.hubdb.tablesApi.publishDraftTable(dbTableId);
-
   return response;
 };
 
@@ -79,9 +78,9 @@ exports.main = async event => {
       : event.inputFields['address'];
 
   try {
-    const result = await rowExist(event.origin.portalId, objectId);
-    if (result) {
-      const response = await updateRow(result, [
+    const rowId = await getExistingRowId(objectId);
+    if (rowId !== 0) {
+      const response = await updateRow(rowId, [
         objectId,
         topic,
         details,
