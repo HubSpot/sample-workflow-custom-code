@@ -1,3 +1,6 @@
+/**
+ * Original author: Rebecca Wong <rwong@hubspot.com>
+ */
 const hubspot = require('@hubspot/api-client');
 
 // Format a unix timestamp to the specified language-sensitive representation.
