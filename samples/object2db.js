@@ -83,9 +83,11 @@ exports.main = async event => {
       });
     }
   } catch (err) {
-    err.message === 'HTTP request failed'
-      ? console.error(JSON.stringify(err.response, null, 2))
-      : console.error(err);
+    console.error(
+      err.message === 'HTTP request failed'
+        ? JSON.stringify(err.response, null, 2)
+        : err
+    );
     throw err;
   }
 };
