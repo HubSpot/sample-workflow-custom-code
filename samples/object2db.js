@@ -29,21 +29,8 @@ const createRow = async values => {
 };
 
 const updateRow = async (rowId, values) => {
-  // No updateTableRow() now so access the hubspot request method directly
-  const url = `/hubdb/api/v2/tables/${dbTableId}/rows/${rowId}`;
-  await hubspotClient.apiRequest({
-    method: 'put',
-    path: url,
-    body: {
-      values: {
-        2: values[0],
-        3: values[1],
-        4: values[2],
-        5: values[3],
-        6: values[4],
-        7: values[5],
-      },
-    },
+  await hubspotClient.cms.hubdb.rowsApi.updateDraftTableRow(dbTableId, rowId, {
+    values,
   });
   await hubspotClient.cms.hubdb.tablesApi.publishDraftTable(dbTableId);
 };
@@ -63,24 +50,19 @@ exports.main = async event => {
 
   try {
     const rowId = await getExistingRowId(objectId);
+    // NOTE: HubDB column names must match these keys. Ex: object_id
+    const values = {
+      object_id: objectId,
+      topic,
+      details,
+      date: parseInt(date, 10),
+      speakers,
+      address,
+    };
     if (rowId !== 0) {
-      await updateRow(rowId, [
-        objectId,
-        topic,
-        details,
-        parseInt(date, 10),
-        speakers,
-        address,
-      ]);
+      await updateRow(rowId, values);
     } else {
-      await createRow({
-        object_id: objectId,
-        topic,
-        details,
-        date: parseInt(date, 10),
-        speakers,
-        address,
-      });
+      await createRow(values);
     }
   } catch (err) {
     console.error(
