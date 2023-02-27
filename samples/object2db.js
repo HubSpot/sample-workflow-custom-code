@@ -56,26 +56,17 @@ const updateRow = async (rowId, values) => {
 };
 
 exports.main = async event => {
-  const objectId = event.inputFields['hs_object_id'];
-  const topic = event.inputFields['topic'];
-
-  // set default values for other properties due to only primary display property exists after creating a new record
-  const details =
-    typeof event.inputFields['details'] === 'undefined'
-      ? ''
-      : event.inputFields['details'];
-  const date =
-    typeof event.inputFields['date'] === 'undefined'
-      ? Date.now()
-      : event.inputFields['date'];
-  const speakers =
-    typeof event.inputFields['speakers'] === 'undefined'
-      ? ''
-      : event.inputFields['speakers'];
-  const address =
-    typeof event.inputFields['address'] === 'undefined'
-      ? ''
-      : event.inputFields['address'];
+  // NOTE: Input field names must match these keys. Ex: hs_object_id
+  const {
+    hs_object_id: objectId,
+    topic,
+    // set default values for other properties due to only primary display
+    // property exists after creating a new record
+    details = '',
+    date = Date.now(),
+    speakers = '',
+    address = '',
+  } = event.inputFields;
 
   try {
     const rowId = await getExistingRowId(objectId);
