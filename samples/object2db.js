@@ -24,18 +24,14 @@ const getExistingRowId = async objectId => {
 };
 
 const createRow = async values => {
-  const response = await hubspotClient.cms.hubdb.rowsApi.createTableRow(
-    dbTableId,
-    { values }
-  );
+  await hubspotClient.cms.hubdb.rowsApi.createTableRow(dbTableId, { values });
   await hubspotClient.cms.hubdb.tablesApi.publishDraftTable(dbTableId);
-  return response;
 };
 
 const updateRow = async (rowId, values) => {
   // No updateTableRow() now so access the hubspot request method directly
   const url = `/hubdb/api/v2/tables/${dbTableId}/rows/${rowId}`;
-  const response = await hubspotClient.apiRequest({
+  await hubspotClient.apiRequest({
     method: 'put',
     path: url,
     body: {
@@ -49,10 +45,7 @@ const updateRow = async (rowId, values) => {
       },
     },
   });
-  const json = await response.json();
   await hubspotClient.cms.hubdb.tablesApi.publishDraftTable(dbTableId);
-
-  return json;
 };
 
 exports.main = async event => {
@@ -71,7 +64,7 @@ exports.main = async event => {
   try {
     const rowId = await getExistingRowId(objectId);
     if (rowId !== 0) {
-      const response = await updateRow(rowId, [
+      await updateRow(rowId, [
         objectId,
         topic,
         details,
@@ -80,13 +73,13 @@ exports.main = async event => {
         address,
       ]);
     } else {
-      const response = await createRow({
+      await createRow({
         object_id: objectId,
-        topic: topic,
-        details: details,
+        topic,
+        details,
         date: parseInt(date, 10),
-        speakers: speakers,
-        address: address,
+        speakers,
+        address,
       });
     }
   } catch (err) {
