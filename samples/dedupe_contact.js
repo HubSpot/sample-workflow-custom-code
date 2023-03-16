@@ -19,8 +19,7 @@ exports.main = (event, callback) => {
     .getById(event.object.objectId, [DEDUPE_PROPERTY])
     .then(contactResult => {
       let dedupePropValue = contactResult.body.properties[DEDUPE_PROPERTY];
-
-      console.log(`Looking for duplicates based on ${DEDUPE_PROPERTY} = ${dedupePropValue}`);
+      console.log(`Looking for duplicates based on ${DEDUPE_PROPERTY} = ${dedupePropValue}`)
       hubspotClient.crm.contacts.searchApi
         .doSearch({
           filterGroups: [{
@@ -55,8 +54,11 @@ exports.main = (event, callback) => {
               }
             })
             .then(mergeResult => {
-              console.log('Contacts merged!');
-            });
-        });
-    });
+              console.log(`Contacts merged! ${mergeResult}`);
+            })
+            .catch(err => console.error(err));
+        })
+        .catch(err => console.error(err));
+    })
+    .catch(err => console.error(err));
 };
