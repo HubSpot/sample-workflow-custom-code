@@ -15,8 +15,8 @@ const hubspot = require('@hubspot/api-client');
       .then(results => {
 
    // Store properties in variables
-      let startDate = results.body.properties.start_date;
-      let duration = results.body.properties.duration;
+      let startDate = results.properties.start_date;
+      let duration = results.properties.duration;
 
    // Calculate the end date from the variables input
       let d = new Date(startDate)
