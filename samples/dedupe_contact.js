@@ -18,7 +18,7 @@ exports.main = (event, callback) => {
   hubspotClient.crm.contacts.basicApi
     .getById(event.object.objectId, [DEDUPE_PROPERTY])
     .then(contactResult => {
-      let dedupePropValue = contactResult.body.properties[DEDUPE_PROPERTY];
+      let dedupePropValue = contactResult.properties[DEDUPE_PROPERTY];
 
       console.log(`Looking for duplicates based on ${DEDUPE_PROPERTY} = ${dedupePropValue}`);
       hubspotClient.crm.contacts.searchApi
@@ -32,7 +32,7 @@ exports.main = (event, callback) => {
           }]
         })
         .then(searchResults => {
-          let idsToMerge = searchResults.body.results
+          let idsToMerge = searchResults.results
             .map(object => object.id)
             .filter(vid => Number(vid) !== Number(event.object.objectId));
 
